@@ -84,3 +84,13 @@ def delete(spot_id):
     db.session.commit()
     flash('You have deleted SPOT ID {}'.format(spot_id))
     return redirect(url_for('index'))
+
+
+@app.route('/feed/<spot_id>')
+@login_required
+def feed(spot_id):
+    feed = Feed.query.filter_by(spot_id=spot_id).first()
+    if feed is None:
+        flash('Feed not found.')
+        redirect(url_for('index'))
+    return render_template('feed.html', title='Feed {}'.format(feed.spot_id), feed=feed)

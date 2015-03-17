@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ feed.spot_id }}</h1>
+    <table class="table">
+        <tr>
+            <th>Date</th>
+            <th>Longitude</th>
+            <th>Latitude</th>
+            <th>Marker Type</th>
+        </tr>
+        {% for marker in feed.markers.all() %}
+        <tr>
+            <td>{{ marker.datetime.strftime('%m-%d-%Y %X') }}</td>
+            <td>{{ marker.longitude }}</td>
+            <td>{{ marker.latitude }}</td>
+            <td>{{ marker.message_type }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% include "map.html" %}
+{% endblock %}

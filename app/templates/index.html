@@ -4,27 +4,27 @@
     <form action="" method="post" name="post">
         {{ form.hidden_tag() }}
         <table>
-            <tr>
+            <tr class="form-group">
                 <td>Add a new SPOT Feed:</td>
-                <td>{{ form.spot_id(size=33, maxlength=33) }}</td>
+                <td>{{ form.spot_id(size=33, maxlength=33, class="form-control") }}</td>
                 <td>
                     {% for error in form.spot_id.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
+                    <span class="label label-danger">[{{ error }}]</span>
                     {% endfor %}
                 </td>
             </tr>
             <tr>
                 <td>Description:</td>
-                <td>{{ form.description(size=40, maxlength=40) }}</td>
+                <td>{{ form.description(size=40, maxlength=40, class="form-control") }}</td>
             </tr>
             <tr>
                 <td></td>
-                <td><input type="submit" value="Submit"/></td>
+                <td><button type="submit" class="btn btn-default">Submit</button></td>
                 <td></td>
             </tr>
         </table>
     </form>
-    <table>
+    <table class="table">
         <tr>
             <th>Feed</th>
             <th>Description</th>
@@ -33,9 +33,9 @@
         </tr>
         {% for feed in feeds %}
         <tr>
-            <td>{{ feed.spot_id }} </td>
+            <td><a href="{{ url_for('feed', spot_id=feed.spot_id) }}">{{ feed.spot_id }}</a></td>
             <td>{{ feed.description }}</td>
-            <td>{% if feed.active %} X {% else %} {% endif %}</td>
+            <td>{% if feed.active %} <span class="glyphicon glyphicon-ok-circle"></span> {% else %} <span class="glyphicon glyphicon-remove-circle"></span> {% endif %}</td>
             <td><a href="{{ url_for('delete', spot_id=feed.spot_id) }}">Delete</a></td>
         </tr>
         {% endfor %}

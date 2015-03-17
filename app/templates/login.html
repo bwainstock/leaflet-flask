@@ -21,13 +21,13 @@ function set_openid(openid, pr)
         Please enter your OpenID, or select one of the providers below:<br>
         {{ form.openid(size=80) }}
         {% for error in form.openid.errors %}
-          <span style="color: red;">[{{error}}]</span>
+          <span class="label label-danger"">{{error}}</span>
         {% endfor %}<br>
         |{% for pr in providers %}
           <a href="javascript:set_openid('{{ pr.url }}', '{{ pr.name }}');">{{ pr.name }}</a> |
         {% endfor %}
     </p>
     <p>{{ form.remember_me }} Remember Me</p>
-    <p><input type="submit" value="Sign In"></p>
+    <p><button type="submit" class="btn btn-default">Sign In</button></p>
 </form>
 {% endblock %}
