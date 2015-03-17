@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Hi, {{ g.user.nickname }}</h1>
+    <form action="" method="post" name="post">
+        {{ form.hidden_tag() }}
+        <table>
+            <tr>
+                <td>Add a new SPOT Feed:</td>
+                <td>{{ form.spot_id(size=33, maxlength=33) }}</td>
+                <td>
+                    {% for error in form.spot_id.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <td>Description:</td>
+                <td>{{ form.description(size=40, maxlength=40) }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Submit"/></td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+    <table>
+        <tr>
+            <th>Feed</th>
+            <th>Description</th>
+            <th>Active</th>
+            <th></th>
+        </tr>
+        {% for feed in feeds %}
+        <tr>
+            <td>{{ feed.spot_id }} </td>
+            <td>{{ feed.description }}</td>
+            <td>{% if feed.active %} X {% else %} {% endif %}</td>
+            <td><a href="{{ url_for('delete', spot_id=feed.spot_id) }}">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
