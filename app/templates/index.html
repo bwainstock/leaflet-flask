@@ -38,7 +38,12 @@
             <td><a href="{{ url_for('feed', spot_id=feed.spot_id) }}">{{ feed.spot_id }}</a></td>
             <td>{{ feed.description }}</td>
             <td>{{ feed.markers.count() }}</td>
-            <td>{% if feed.active %} <span class="glyphicon glyphicon-ok-circle"></span> {% else %} <span class="glyphicon glyphicon-remove-circle"></span> {% endif %}</td>
+            <td>{% if feed.active %}
+                <a href="{{ url_for('toggle_feed_active', spot_id=feed.spot_id) }}"><span class="glyphicon glyphicon-ok-circle" style="color: green;"></span></a>
+                {% else %}
+                <a href="{{ url_for('toggle_feed_active', spot_id=feed.spot_id) }}"><span class="glyphicon glyphicon-remove-circle" style="color: red;"></span></a>
+                {% endif %}
+            </td>
             <td><a href="{{ url_for('delete', spot_id=feed.spot_id) }}">Delete</a></td>
         </tr>
         {% endfor %}

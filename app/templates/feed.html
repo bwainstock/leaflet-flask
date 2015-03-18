@@ -20,7 +20,11 @@
             <td>{{ marker.longitude }}</td>
             <td>{{ marker.latitude }}</td>
             <td>{{ marker.message_type }}</td>
-            <td>{% if marker.active %} <span class="glyphicon glyphicon-ok-circle"></span> {% else %} <span class="glyphicon glyphicon-remove-circle"></span> {% endif %}</td>
+            <td>{% if marker.active %}
+                <a href="{{ url_for('toggle_marker_active', id=marker.id) }}"><span class="glyphicon glyphicon-ok-circle" style="color: green;"></span></a>
+                {% else %}
+                <a href="{{ url_for('toggle_marker_active', id=marker.id) }}"><span class="glyphicon glyphicon-remove-circle" style="color: red;"></span></a>
+                {% endif %}</td>
         </tr>
         {% endfor %}
     </table>

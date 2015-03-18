@@ -17,7 +17,7 @@ def get_spot_json(spot_url):
 
 
 def db_write(data, feed):
-    latest_marker = feed.newest_marker()
+    latest_marker = feed.newest_marker
     if latest_marker:
         maxtime = latest_marker.unixtime
     else:

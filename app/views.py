@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
 from .forms import KeyForm, LoginForm
-from .models import User, Feed
+from .models import User, Feed, Marker
 from spot_api_scraper import SPOT_URL, get_spot_json, db_write
 
 
@@ -104,3 +104,21 @@ def feed(spot_id):
         flash('Feed not found.')
         redirect(url_for('index'))
     return render_template('feed.html', title='Feed {}'.format(feed.spot_id), feed=feed)
+
+
+@app.route('/feed/<spot_id>/toggle')
+@login_required
+def toggle_feed_active(spot_id):
+    feed = Feed.query.filter_by(spot_id=spot_id).first()
+    feed.toggle_active()
+    db.session.commit()
+    return redirect(url_for('index'))
+
+
+@app.route('/marker/<int:id>/toggle')
+@login_required
+def toggle_marker_active(id):
+    marker = Marker.query.get(id)
+    marker.toggle_active()
+    db.session.commit()
+    return redirect(url_for('feed', spot_id=marker.spot_id))

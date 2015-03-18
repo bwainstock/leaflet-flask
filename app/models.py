@@ -47,8 +47,15 @@ class Feed(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     markers = db.relationship('Marker', backref='feed', lazy='dynamic')
 
+    @property
     def newest_marker(self):
         return self.markers.order_by(Marker.unixtime.desc()).first()
+
+    def toggle_active(self):
+        if self.active == True:
+            self.active = False
+        else:
+            self.active = True
 
     def __repr__(self):
         return '<Feed {}>'.format(self.spot_id)
@@ -66,6 +73,11 @@ class Marker(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     active = db.Column(db.Boolean, unique=False, default=True)
 
+    def toggle_active(self):
+        if self.active == True:
+            self.active = False
+        else:
+            self.active = True
 
     def __repr__(self):
         return '<Marker {}/{}, {}>'.format(
