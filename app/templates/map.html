@@ -1,3 +1,30 @@
-<div style="width: 500px; height: 500px; border: solid 1px black; margin: 0 auto;">
+<!--<div style="border: 1px solid black;">-->
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <h1>This is your map!</h1>
-</div>
+    <div id="map" style="height: 500px"></div>
+
+    <script type="text/javascript">
+        var markers = [{% for marker in feed.markers.all() %}[{{ marker.latitude }},{{ marker.longitude }}],{% endfor %}]
+        var map = L.map('map').setView([45.5, -122.4], 7);
+        var lineOptions = {
+                            color: '#333',
+                            weight: 3,
+                            dashArray: '5,5'
+		};
+        var polyline = L.polyline([], lineOptions);
+
+        L.tileLayer('http://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png', {
+        }).addTo(map);
+
+        for (var i = 0, len = markers.length; i < len; i++) {
+            marker = markers[i];
+            latlng = L.latLng(marker[0], marker[1]);
+
+            polyline.addLatLng(latlng);
+        }
+
+        polyline.addTo(map);
+        map.fitBounds(polyline.getBounds());
+    </script>
+<!--</div>-->

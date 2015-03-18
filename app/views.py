@@ -3,7 +3,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, oid
 from .forms import KeyForm, LoginForm
 from .models import User, Feed
-
+from spot_api_scraper import SPOT_URL, get_spot_json, db_write
 
 @lm.user_loader
 def load_user(id):
@@ -68,6 +68,12 @@ def index():
         db.session.add(feed)
         db.session.commit()
         flash('Feed added!')
+        data = get_spot_json(SPOT_URL.format(feed.spot_id))
+        if data:
+            db_write(data, feed)
+            flash('Markers added!')
+        else:
+            flash('No markers found.')
         return redirect(url_for('index'))
     feeds = g.user.feeds.all()
     return render_template('index.html', title='Home', form=form, feeds=feeds)

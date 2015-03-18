@@ -46,6 +46,9 @@ class Feed(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     markers = db.relationship('Marker', backref='feed', lazy='dynamic')
 
+    def newest_marker(self):
+        return self.markers.order_by(Marker.unixtime.desc()).first()
+
     def __repr__(self):
         return '<Feed {}>'.format(self.spot_id)
 
