@@ -64,6 +64,8 @@ class Marker(db.Model):
     latitude = db.Column(db.Float)
     spot_id = db.Column(db.String(33), db.ForeignKey('feed.spot_id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    active = db.Column(db.Boolean, unique=False, default=True)
+
 
     def __repr__(self):
         return '<Marker {}/{}, {}>'.format(

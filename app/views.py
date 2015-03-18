@@ -84,6 +84,9 @@ def index():
 @login_required
 def delete(spot_id):
     feed = Feed.query.filter_by(spot_id=spot_id).first()
+    markers = feed.markers.all()
+    for marker in markers:
+        db.session.delete(marker)
     if feed is None:
         flash('Feed not found.')
         redirect(url_for('index'))

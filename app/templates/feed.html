@@ -12,6 +12,7 @@
             <th>Longitude</th>
             <th>Latitude</th>
             <th>Marker Type</th>
+            <th>Active</th>
         </tr>
         {% for marker in feed.markers.all() %}
         <tr>
@@ -19,6 +20,7 @@
             <td>{{ marker.longitude }}</td>
             <td>{{ marker.latitude }}</td>
             <td>{{ marker.message_type }}</td>
+            <td>{% if marker.active %} <span class="glyphicon glyphicon-ok-circle"></span> {% else %} <span class="glyphicon glyphicon-remove-circle"></span> {% endif %}</td>
         </tr>
         {% endfor %}
     </table>
