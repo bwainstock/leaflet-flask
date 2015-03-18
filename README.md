@@ -4,6 +4,8 @@ A flask application to create Leaflet maps from SPOT personal locator beacon API
 TODO:
 ---
 - Update feed details
-- Map based on feed
-- API crawler
+  - key, description
+- Delete markers
+- Toggle markers on/off
+  - Map based on only active markers
 - Share map
