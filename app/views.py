@@ -5,6 +5,7 @@ from .forms import KeyForm, LoginForm
 from .models import User, Feed
 from spot_api_scraper import SPOT_URL, get_spot_json, db_write
 
+
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))

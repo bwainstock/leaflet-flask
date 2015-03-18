@@ -1,5 +1,5 @@
 from app import db
-from app.models import User, Feed, Marker
+from app.models import Feed, Marker
 
 from datetime import datetime
 import requests
@@ -45,6 +45,7 @@ def db_write(data, feed):
             print(marker)
 
     db.session.commit()
+
 
 def main():
     feeds = Feed.query.all()

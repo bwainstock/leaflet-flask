@@ -5,26 +5,52 @@
     <div id="map" style="height: 500px"></div>
 
     <script type="text/javascript">
-        var markers = [{% for marker in feed.markers.all() %}[{{ marker.latitude }},{{ marker.longitude }}],{% endfor %}]
+        var markers;
+        var messages = [ {% for marker in feed.markers.all() %}
+                        {'unixtime': {{ marker.unixtime }},
+                         'datetime': '{{ marker.datetime }}',
+                         'message_type': '{{ marker.message_type }}',
+                         'longitude': {{ marker.longitude }},
+                         'latitude': {{ marker.latitude }},
+                        },
+                        {% endfor %}
+        ];
         var map = L.map('map').setView([45.5, -122.4], 7);
-        var lineOptions = {
+        var options = {
+                        focus: false,
+                        fitBounds: true,
+                        marker: {
+                            radius: 5,
+                            color: '#333',
+                            fillOpacity: 1,
+                            stroke: false
+                        },
+                        line: {
                             color: '#333',
                             weight: 3,
                             dashArray: '5,5'
-		};
-        var polyline = L.polyline([], lineOptions);
+                        },
+                        show: {
+                            'UNLIMITED-TRACK': 12,
+                            'OK': 14,
+                            'CUSTOM': 14
+                        }
+        };
+        var polyline = L.polyline([], options.line);
 
         L.tileLayer('http://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png', {
         }).addTo(map);
 
-        for (var i = 0, len = markers.length; i < len; i++) {
-            marker = markers[i];
-            latlng = L.latLng(marker[0], marker[1]);
-
+        for (var i = 0, len = messages.length; i < len; i++) {
+            message = messages[i];
+            latlng = L.latLng(message.latitude, message.longitude);
+            type = message.message_type;
+            markerOptions = L.extend({ message: message }, options.marker);
+            map.addLayer(L.circleMarker(latlng, markerOptions));
             polyline.addLatLng(latlng);
         }
 
-        polyline.addTo(map);
+        map.addLayer(polyline);
         map.fitBounds(polyline.getBounds());
     </script>
 <!--</div>-->

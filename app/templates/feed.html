@@ -3,6 +3,9 @@
 {% block content %}
     <h1>{{ feed.description }}</h1>
     <h3>{{ feed.spot_id }}</h3>
+
+    {% include "map.html" %}
+
     <table class="table table-condensed">
         <tr>
             <th>Date</th>
@@ -19,6 +22,4 @@
         </tr>
         {% endfor %}
     </table>
-
-    {% include "map.html" %}
 {% endblock %}
