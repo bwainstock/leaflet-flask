@@ -97,7 +97,7 @@ def delete(spot_id):
 
 
 @app.route('/feed/<spot_id>')
-@login_required
+# @login_required
 def feed(spot_id):
     feed = Feed.query.filter_by(spot_id=spot_id).first()
     if feed is None:
@@ -119,6 +119,7 @@ def toggle_feed_active(spot_id):
 @login_required
 def toggle_marker_active(id):
     marker = Marker.query.get(id)
-    marker.toggle_active()
-    db.session.commit()
+    if g.user.id == marker.user_id:
+        marker.toggle_active()
+        db.session.commit()
     return redirect(url_for('feed', spot_id=marker.spot_id))
