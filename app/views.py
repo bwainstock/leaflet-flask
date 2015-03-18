@@ -122,4 +122,6 @@ def toggle_marker_active(id):
     if g.user.id == marker.user_id:
         marker.toggle_active()
         db.session.commit()
+    else:
+        flash('Only the feed owner can do that.')
     return redirect(url_for('feed', spot_id=marker.spot_id))

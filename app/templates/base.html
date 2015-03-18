@@ -24,11 +24,13 @@
       </div>
         {% with messages = get_flashed_messages() %}
           {% if messages %}
-            <ul>
+            <div>
+            <ul style="text-align: center;">
               {% for message in messages %}
                 <h2><span class="alert alert-info">{{ message }}</span></h2>
               {% endfor %}
             </ul>
+            </div>
           {% endif %}
         {% endwith %}
 

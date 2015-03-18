@@ -5,7 +5,7 @@
 
     <script type="text/javascript">
         var markers;
-        var messages = [ {% for marker in feed.markers.all() %}
+        var messages = [ {% for marker in feed.markers.filter_by(active=True).all() %}
                         {'unixtime': {{ marker.unixtime }},
                          'datetime': '{{ marker.datetime }}',
                          'message_type': '{{ marker.message_type }}',
