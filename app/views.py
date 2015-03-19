@@ -123,6 +123,27 @@ def toggle_feed_active(spot_id):
     db.session.commit()
     return redirect(url_for('index'))
 
+@app.route('/feed/<spot_id>/activate_all')
+@login_required
+def activate_all(spot_id):
+    feed = Feed.query.filter_by(spot_id=spot_id).first()
+    if g.user.id == feed.user_id:
+        feed.activate_all_markers()
+        db.session.commit()
+    else:
+        flash('Only the feed owner can do that.', 'warning')
+    return redirect(url_for('feed', spot_id=feed.spot_id))
+
+@app.route('/feed/<spot_id>/deactivate_all')
+@login_required
+def deactivate_all(spot_id):
+    feed = Feed.query.filter_by(spot_id=spot_id).first()
+    if g.user.id == feed.user_id:
+        feed.deactivate_all_markers()
+        db.session.commit()
+    else:
+        flash('Only the feed owner can do that.', 'warning')
+    return redirect(url_for('feed', spot_id=feed.spot_id))
 
 @app.route('/marker/<int:id>/toggle')
 @login_required

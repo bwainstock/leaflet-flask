@@ -57,6 +57,12 @@ class Feed(db.Model):
         else:
             self.active = True
 
+    def activate_all_markers(self):
+        self.markers.filter_by(active=False).update({"active": True})
+
+    def deactivate_all_markers(self):
+        self.markers.filter_by(active=True).update({"active": False})
+
     def __repr__(self):
         return '<Feed {}>'.format(self.spot_id)
 

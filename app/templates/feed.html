@@ -10,31 +10,36 @@
 </div>
 <div class="col-sm-3 col-xs-12 info-column">
     <div class="row">
-    <h1>{{ feed.description }}</h1>
-    <h3>{{ feed.spot_id }}</h3>
-
-    <table class="table table-condensed">
-        <tr>
-            <th>Date</th>
-            <th>Longitude</th>
-            <th>Latitude</th>
-            <th>Marker Type</th>
-            <th>Active</th>
-        </tr>
-        {% for marker in feed.markers.all() %}
-        <tr>
-            <td>{{ marker.datetime.strftime('%m-%d-%Y %X') }}</td>
-            <td>{{ marker.longitude }}</td>
-            <td>{{ marker.latitude }}</td>
-            <td>{{ marker.message_type }}</td>
-            <td>{% if marker.active %}
-                <a href="{{ url_for('toggle_marker_active', id=marker.id) }}"><span class="glyphicon glyphicon-ok-circle" style="color: green;"></span></a>
-                {% else %}
-                <a href="{{ url_for('toggle_marker_active', id=marker.id) }}"><span class="glyphicon glyphicon-remove-circle" style="color: red;"></span></a>
-                {% endif %}</td>
-        </tr>
-        {% endfor %}
-    </table>
+        <h1>{{ feed.description }}</h1>
+        <h3>{{ feed.spot_id }}</h3>
+    </div>
+    <div class="row">
+        <a href="{{ url_for('activate_all', spot_id=feed.spot_id) }}" class="btn btn-success" role="button">Activate all</a>
+        <a href="{{ url_for('deactivate_all', spot_id=feed.spot_id) }}" class="btn btn-danger" role="button">Deactivate all</a>
+    </div>
+    <div class="row">
+        <table class="table table-condensed">
+            <tr>
+                <th>Date</th>
+                <th>Longitude</th>
+                <th>Latitude</th>
+                <th>Marker Type</th>
+                <th>Active</th>
+            </tr>
+            {% for marker in feed.markers.all() %}
+            <tr>
+                <td>{{ marker.datetime.strftime('%m-%d-%Y %X') }}</td>
+                <td>{{ marker.longitude }}</td>
+                <td>{{ marker.latitude }}</td>
+                <td>{{ marker.message_type }}</td>
+                <td>{% if marker.active %}
+                    <a href="{{ url_for('toggle_marker_active', id=marker.id) }}"><span class="glyphicon glyphicon-ok-circle" style="color: green;"></span></a>
+                    {% else %}
+                    <a href="{{ url_for('toggle_marker_active', id=marker.id) }}"><span class="glyphicon glyphicon-remove-circle" style="color: red;"></span></a>
+                    {% endif %}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 </div>
 
