@@ -1,0 +1,28 @@
+
+
+body {
+    padding-top: 70px;
+}
+
+#map {
+    height: 400px;
+}
+
+@media (min-width: 768px) {
+    .fixed {
+            position: fixed;
+    }
+    .outer-fixed {
+            float: left;
+    }
+    .map-column, #map {
+    height: 100%;
+    }
+    .info-column {
+        margin: -8px;
+    }
+    html, body, .container-fluid {
+        width: 100%;
+        height: 100%;
+    }
+}

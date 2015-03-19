@@ -1,8 +1,12 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
+from sqlalchemy.exc import IntegrityError
+
 from app import app, db, lm, oid
 from .forms import KeyForm, LoginForm
 from .models import User, Feed, Marker
+
+
 from spot_api_scraper import SPOT_URL, get_spot_json, db_write
 
 
@@ -40,7 +44,7 @@ def logout():
 @oid.after_login
 def after_login(resp):
     if resp.email is None or resp.email == "":
-        flash('Invalid login.  Please try again.')
+        flash('Invalid login.  Please try again.', 'warning')
         return redirect(url_for('login'))
     user = User.query.filter_by(email=resp.email).first()
     if user is None:
@@ -67,14 +71,19 @@ def index():
     if form.validate_on_submit():
         feed = Feed(spot_id=form.spot_id.data, description=form.description.data, user=g.user)
         db.session.add(feed)
-        db.session.commit()
-        flash('Feed added!')
-        data = get_spot_json(SPOT_URL.format(feed.spot_id))
-        if data:
-            db_write(data, feed)
-            flash('Markers added!')
+        try:
+            db.session.commit()
+        except IntegrityError:
+            flash('Duplicate feed.  Please check SPOT ID.', 'danger')
+            db.session.rollback()
         else:
-            flash('No markers found.')
+            flash('Feed added!', 'success')
+            data = get_spot_json(SPOT_URL.format(feed.spot_id))
+            if data:
+                db_write(data, feed)
+                flash('Markers added!', 'success')
+            else:
+                flash('No markers found.', 'danger')
         return redirect(url_for('index'))
     feeds = g.user.feeds.all()
     return render_template('index.html', title='Home', form=form, feeds=feeds)
@@ -92,7 +101,7 @@ def delete(spot_id):
         redirect(url_for('index'))
     db.session.delete(feed)
     db.session.commit()
-    flash('You have deleted SPOT ID {}'.format(spot_id))
+    flash('You have deleted SPOT ID {}'.format(spot_id), 'info')
     return redirect(url_for('index'))
 
 
@@ -101,7 +110,7 @@ def delete(spot_id):
 def feed(spot_id):
     feed = Feed.query.filter_by(spot_id=spot_id).first()
     if feed is None:
-        flash('Feed not found.')
+        flash('Feed not found.', 'warning')
         redirect(url_for('index'))
     return render_template('feed.html', title='Feed {}'.format(feed.spot_id), feed=feed)
 
@@ -123,5 +132,5 @@ def toggle_marker_active(id):
         marker.toggle_active()
         db.session.commit()
     else:
-        flash('Only the feed owner can do that.')
+        flash('Only the feed owner can do that.', 'warning')
     return redirect(url_for('feed', spot_id=marker.spot_id))

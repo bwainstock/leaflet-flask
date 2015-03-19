@@ -1,10 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="outer-fixed map-column">
+    <div class="col-sm-9 col-xs-12 col-sm-push-3 fixed map-column">
+        <div class="row map-column">
+            {% include "map.html" %}
+        </div>
+    </div>
+</div>
+<div class="col-sm-3 col-xs-12 info-column">
+    <div class="row">
     <h1>{{ feed.description }}</h1>
     <h3>{{ feed.spot_id }}</h3>
-
-    {% include "map.html" %}
 
     <table class="table table-condensed">
         <tr>
@@ -28,4 +35,7 @@
         </tr>
         {% endfor %}
     </table>
+    </div>
+</div>
+
 {% endblock %}
