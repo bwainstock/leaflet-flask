@@ -51,6 +51,10 @@ class Feed(db.Model):
     def newest_marker(self):
         return self.markers.order_by(Marker.unixtime.desc()).first()
 
+    @property
+    def oldest_marker(self):
+        return self.markers.order_by(Marker.unixtime.asc()).first()
+
     def toggle_active(self):
         if self.active == True:
             self.active = False
@@ -62,6 +66,11 @@ class Feed(db.Model):
 
     def deactivate_all_markers(self):
         self.markers.filter_by(active=True).update({"active": False})
+
+    def toggle_markers_by_date(self, start_date, end_date):
+        on = self.markers.filter(Marker.datetime >= start_date, Marker.datetime <= end_date, Marker.active==False).update({'active': True})
+        off = self.markers.filter(Marker.datetime < start_date, Marker.datetime > end_date, Marker.active==True).update({'active': False})
+        return (on, off, start_date, end_date)
 
     def __repr__(self):
         return '<Feed {}>'.format(self.spot_id)

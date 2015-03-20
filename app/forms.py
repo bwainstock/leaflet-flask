@@ -1,6 +1,7 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, BooleanField
-from wtforms.validators import DataRequired, Length
+from wtforms import StringField, BooleanField, DateTimeField
+# from wtforms.fields.html5 import DateTimeField
+from wtforms.validators import DataRequired, Length, Optional
 
 
 class KeyForm(Form):
@@ -11,3 +12,7 @@ class KeyForm(Form):
 class LoginForm(Form):
     openid = StringField('openid', validators=[DataRequired()])
     remember_me = BooleanField('remember_me', default=False)
+
+class DateForm(Form):
+    start = DateTimeField('start', format='%Y-%m-%dT%H:%M:%S')
+    end = DateTimeField('end', format='%Y-%m-%dT%H:%M:%S', validators=[Optional()])

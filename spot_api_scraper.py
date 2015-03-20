@@ -51,8 +51,9 @@ def main():
     feeds = Feed.query.all()
     for feed in feeds:
         data = get_spot_json(SPOT_URL.format(feed.spot_id))
-        print(data)
+        #print(data)
         if data:
+            print(feed)
             db_write(data, feed)
         sleep(2)
 

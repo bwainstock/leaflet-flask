@@ -3,7 +3,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from sqlalchemy.exc import IntegrityError
 
 from app import app, db, lm, oid
-from .forms import KeyForm, LoginForm
+from .forms import KeyForm, LoginForm, DateForm
 from .models import User, Feed, Marker
 
 
@@ -105,14 +105,29 @@ def delete(spot_id):
     return redirect(url_for('index'))
 
 
-@app.route('/feed/<spot_id>')
+@app.route('/feed/<spot_id>', methods=['GET', 'POST'])
 # @login_required
 def feed(spot_id):
+    form = DateForm()
     feed = Feed.query.filter_by(spot_id=spot_id).first()
     if feed is None:
         flash('Feed not found.', 'warning')
         redirect(url_for('index'))
-    return render_template('feed.html', title='Feed {}'.format(feed.spot_id), feed=feed)
+    if form.is_submitted():
+        if not form.start.data:
+            start = feed.oldest_marker.datetime
+        else:
+            start = form.start.data
+        if not form.end.data:
+            end = feed.newest_marker.datetime
+        else:
+            end = form.end.data
+        changed = feed.toggle_markers_by_date(start, end)
+        flash(changed)
+        db.session.commit()
+    markers = feed.markers.order_by(Marker.datetime.desc()).all()
+    map_markers = feed.markers.filter(Marker.active==True).order_by(Marker.datetime.asc()).all()
+    return render_template('feed.html', title='Feed {}'.format(feed.spot_id), feed=feed, markers=markers, map_markers=map_markers, form=form)
 
 
 @app.route('/feed/<spot_id>/toggle')

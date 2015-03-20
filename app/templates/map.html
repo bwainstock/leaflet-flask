@@ -5,7 +5,7 @@
 
     <script type="text/javascript">
         var markers;
-        var messages = [ {% for marker in feed.markers.filter_by(active=True).all() %}
+        var messages = [ {% for marker in map_markers %}
                         {'unixtime': {{ marker.unixtime }},
                          'datetime': '{{ marker.datetime }}',
                          'message_type': '{{ marker.message_type }}',
@@ -33,7 +33,11 @@
                             'UNLIMITED-TRACK': 12,
                             'OK': 14,
                             'CUSTOM': 14
-                        }
+                        },
+                        onClick: function (evt) {
+                          var message = evt.message;
+                          evt.layer.bindPopup(getTime(message.unixtime)).openPopup();
+                        },
         };
         var polyline = L.polyline([], options.line);
 
@@ -45,7 +49,7 @@
             latlng = L.latLng(message.latitude, message.longitude);
             type = message.message_type;
             markerOptions = L.extend({ message: message }, options.marker);
-            map.addLayer(L.circleMarker(latlng, markerOptions));
+            map.addLayer(L.circleMarker(latlng, markerOptions).bindPopup(message.datetime));
             polyline.addLatLng(latlng);
         }
 

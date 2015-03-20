@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block css %}
+    <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+{% endblock %}
+
 {% block content %}
 <div class="outer-fixed map-column">
     <div class="col-sm-9 col-xs-12 col-sm-push-3 fixed map-column">
@@ -18,6 +22,27 @@
         <a href="{{ url_for('deactivate_all', spot_id=feed.spot_id) }}" class="btn btn-danger" role="button">Deactivate all</a>
     </div>
     <div class="row">
+        <form action="" method="post" name="post">
+            {{ form.hidden_tag() }}
+            <tr class="form-group">
+                <td>
+                    {{ form.start(class="form_datetime form-control") }}
+                </td>
+                <td>
+                        <span class="input-group-addon">to</span>
+                </td>
+                <td>
+                    {{ form.end(class="form_datetime form-control") }}
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit" class="btn btn-default">Submit</button></td>
+                <td></td>
+            </tr>
+        </form>
+    </div>
+    <div class="row">
         <table class="table table-condensed">
             <tr>
                 <th>Date</th>
@@ -26,7 +51,7 @@
                 <th>Marker Type</th>
                 <th>Active</th>
             </tr>
-            {% for marker in feed.markers.all() %}
+            {% for marker in markers %}
             <tr>
                 <td>{{ marker.datetime.strftime('%m-%d-%Y %X') }}</td>
                 <td>{{ marker.longitude }}</td>
@@ -43,4 +68,11 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $(".form_datetime").datetimepicker({format: 'YYYY-MM-DD[T]HH:mm:ss'});
+    </script>
 {% endblock %}
