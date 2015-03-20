@@ -7,7 +7,7 @@ from .forms import KeyForm, LoginForm, DateForm
 from .models import User, Feed, Marker
 
 
-from spot_api_scraper import SPOT_URL, get_spot_json, db_write
+import spot_api_scraper
 
 
 @lm.user_loader
@@ -78,9 +78,9 @@ def index():
             db.session.rollback()
         else:
             flash('Feed added!', 'success')
-            data = get_spot_json(SPOT_URL.format(feed.spot_id))
+            data = spot_api_scraper.get_spot_json(spot_api_scraper.SPOT_URL.format(feed.spot_id))
             if data:
-                db_write(data, feed)
+                spot_api_scraper.db_write(data, feed)
                 flash('Markers added!', 'success')
             else:
                 flash('No markers found.', 'danger')
@@ -122,8 +122,7 @@ def feed(spot_id):
             end = feed.newest_marker.datetime
         else:
             end = form.end.data
-        changed = feed.toggle_markers_by_date(start, end)
-        flash(changed)
+        feed.toggle_markers_by_date(start, end)
         db.session.commit()
     markers = feed.markers.order_by(Marker.datetime.desc()).all()
     map_markers = feed.markers.filter(Marker.active == True).order_by(Marker.datetime.asc()).all()
