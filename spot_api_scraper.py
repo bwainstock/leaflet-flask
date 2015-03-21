@@ -48,7 +48,7 @@ def db_write(data, feed):
 
 
 def main():
-    feeds = Feed.query.all()
+    feeds = Feed.query.filter(Feed.active==True).all()
     for feed in feeds:
         data = get_spot_json(SPOT_URL.format(feed.spot_id))
         #print(data)

@@ -2,6 +2,7 @@
 
 {% block css %}
     <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+    <script src="/static/js/moment.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -45,6 +46,7 @@
     <div class="row">
         <table class="table table-condensed">
             <tr>
+                <!--<th>Number</th>-->
                 <th>Date</th>
                 <th>Longitude</th>
                 <th>Latitude</th>
@@ -53,7 +55,10 @@
             </tr>
             {% for marker in markers %}
             <tr>
-                <td>{{ marker.datetime.strftime('%m-%d-%Y %X') }}</td>
+                <!--<td>{{ marker.id }}</td>-->
+                <td>{{ marker.datetime.strftime('%Y-%m-%dT%H:%M:%S') }}</td>
+                <!--<td>{{ marker.datetime.strftime('%m-%d-%Y %X') }}</td>-->
+                <!--<td>{{ momentjs(marker.datetime).format('MM-DD-YYYY HH:mm:ss') }}</td>-->
                 <td>{{ marker.longitude }}</td>
                 <td>{{ marker.latitude }}</td>
                 <td>{{ marker.message_type }}</td>
@@ -72,7 +77,8 @@
 
 {% block js %}
     <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
-    <script type="text/javascript">
-        $(".form_datetime").datetimepicker({format: 'YYYY-MM-DD[T]HH:mm:ss'});
-    </script>
+    <script src="/static/js/moment.min.js"></script>
+    <!--<script type="text/javascript">-->
+        <!--$(".form_datetime").datetimepicker({format: 'YYYY-MM-DD[T]HH:mm:ss'});-->
+    <!--</script>-->
 {% endblock %}

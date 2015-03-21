@@ -49,7 +49,9 @@
             latlng = L.latLng(message.latitude, message.longitude);
             type = message.message_type;
             markerOptions = L.extend({ message: message }, options.marker);
-            map.addLayer(L.circleMarker(latlng, markerOptions).bindPopup(message.datetime));
+            //var display_date = moment(message.datetime).format('LLLL')
+            display_date = message.datetime
+            map.addLayer(L.circleMarker(latlng, markerOptions).bindPopup(display_date));
             polyline.addLatLng(latlng);
         }
 

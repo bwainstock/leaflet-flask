@@ -14,5 +14,5 @@ class LoginForm(Form):
     remember_me = BooleanField('remember_me', default=False)
 
 class DateForm(Form):
-    start = DateTimeField('start', format='%Y-%m-%dT%H:%M:%S')
-    end = DateTimeField('end', format='%Y-%m-%dT%H:%M:%S', validators=[Optional()])
+    start = StringField('start')
+    end = StringField('end')

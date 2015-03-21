@@ -3,10 +3,12 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
+from .momentjs import momentjs
 from config import basedir
 
 app = Flask(__name__)
 app.config.from_object('config')
+app.jinja_env.globals['momentjs'] = momentjs
 db = SQLAlchemy(app)
 
 lm = LoginManager()

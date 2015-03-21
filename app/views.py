@@ -106,14 +106,14 @@ def delete(spot_id):
 
 
 @app.route('/feed/<spot_id>', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def feed(spot_id):
     form = DateForm()
     feed = Feed.query.filter_by(spot_id=spot_id).first()
     if feed is None:
         flash('Feed not found.', 'warning')
-        redirect(url_for('index'))
-    if form.is_submitted():
+        return redirect(url_for('index'))
+    if form.is_submitted() and g.user.id == feed.user_id:
         if not form.start.data:
             start = feed.oldest_marker.datetime
         else:
