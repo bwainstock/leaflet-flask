@@ -92,6 +92,7 @@ class Feed(db.Model):
     def toggle_markers_by_date(self, start_date, end_date):
         self.markers.filter(Marker.datetime >= start_date, Marker.datetime <= end_date).update({'active': True})
         self.markers.filter((Marker.datetime < start_date) | (Marker.datetime > end_date)).update({'active': False})
+        print(start_date, end_date)
 
     def __repr__(self):
         return '<Feed {}>'.format(self.spot_id)

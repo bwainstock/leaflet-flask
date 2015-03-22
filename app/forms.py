@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, BooleanField, PasswordField, SubmitField
+from wtforms import StringField, BooleanField, PasswordField, SubmitField, DateTimeField
 # from wtforms.fields.html5 import DateTimeField
 from wtforms.validators import DataRequired, Length, Optional, EqualTo, ValidationError
 
@@ -26,5 +26,6 @@ class RegistrationForm(Form):
 
 
 class DateForm(Form):
-    start = StringField('start')
-    end = StringField('end')
+    start = DateTimeField('start', format='%Y-%m-%dT%H:%M:%S')
+    end = DateTimeField('end', format='%Y-%m-%dT%H:%M:%S')
+    submit = SubmitField('submit')

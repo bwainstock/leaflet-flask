@@ -6,6 +6,7 @@ from app import app, db, lm, oid
 from .forms import KeyForm, LoginForm, DateForm, RegistrationForm
 from .models import User, Feed, Marker
 
+from datetime import datetime
 
 import spot_api_scraper
 
@@ -33,7 +34,6 @@ def register():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-
 def login():
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('index'))
@@ -53,28 +53,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-
-@oid.after_login
-def after_login(resp):
-    if resp.email is None or resp.email == "":
-        flash('Invalid login.  Please try again.', 'warning')
-        return redirect(url_for('login'))
-    user = User.query.filter_by(email=resp.email).first()
-    if user is None:
-        nickname = resp.nickname
-        if nickname is None or nickname == "":
-            nickname = resp.email.split('@')[0]
-        nickname = User.make_unique_nickname(nickname)
-        user = User(nickname=nickname, email=resp.email)
-        db.session.add(user)
-        db.session.commit()
-    remember_me = False
-    if 'remember_me' in session:
-        remember_me = session['remember_me']
-        session.pop('remember_me', None)
-    login_user(user, remember=remember_me)
-    return redirect(request.args.get('next') or url_for('index'))
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -107,12 +85,12 @@ def index():
 @login_required
 def delete(spot_id):
     feed = Feed.query.filter_by(spot_id=spot_id).first()
-    markers = feed.markers.all()
-    for marker in markers:
-        db.session.delete(marker)
     if feed is None:
         flash('Feed not found.')
         redirect(url_for('index'))
+    markers = feed.markers.all()
+    for marker in markers:
+        db.session.delete(marker)
     db.session.delete(feed)
     db.session.commit()
     flash('You have deleted SPOT ID {}'.format(spot_id), 'info')
@@ -124,10 +102,12 @@ def delete(spot_id):
 def feed(spot_id):
     form = DateForm()
     feed = Feed.query.filter_by(spot_id=spot_id).first()
+    # start = None
+    # end = None
     if feed is None:
         flash('Feed not found.', 'warning')
         return redirect(url_for('index'))
-    if form.is_submitted() and g.user.id == feed.user_id:
+    if form.is_submitted():
         if not form.start.data:
             start = feed.oldest_marker.datetime
         else:
@@ -136,13 +116,18 @@ def feed(spot_id):
             end = feed.newest_marker.datetime
         else:
             end = form.end.data
+        # start = form.start.data
+        # end = form.end.data
         feed.toggle_markers_by_date(start, end)
+        print(start, end)
         db.session.commit()
     markers = feed.markers.order_by(Marker.datetime.desc()).all()
     map_markers = feed.markers.filter(Marker.active == True).order_by(Marker.datetime.asc()).all()
     return render_template('feed.html',
                            title='Feed {}'.format(feed.spot_id),
                            feed=feed,
+                           # start=start,
+                           # end=end,
                            markers=markers,
                            map_markers=map_markers,
                            form=form)
