@@ -16,11 +16,13 @@
     <div class="container-fluid">
       <div class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
-          <a class="brand" href="/">{{ g.user.nickname }}</a>
+          <a class="brand" href="/">{{ current_user.username }}</a>
             <ul class="nav nav-pills">
               <li><a href="{{ url_for('index') }}">Home</a></li>
               {% if g.user.is_authenticated() %}
               <li><a href="{{ url_for('logout') }}">Logout</a></li>
+              {% else %}
+              <li><a href="{{ url_for('register') }}">Register</a></li>
               {% endif %}
             </ul>
         </div>

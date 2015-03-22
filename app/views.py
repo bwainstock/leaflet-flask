@@ -3,7 +3,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from sqlalchemy.exc import IntegrityError
 
 from app import app, db, lm, oid
-from .forms import KeyForm, LoginForm, DateForm
+from .forms import KeyForm, LoginForm, DateForm, RegistrationForm
 from .models import User, Feed, Marker
 
 
@@ -20,19 +20,33 @@ def before_request():
     g.user = current_user
 
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(email=form.email.data, username=form.username.data, password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('You\'ve successfully registered {}'.format(form.username.data))
+        return redirect(url_for('login'))
+    return render_template('register.html', title='Register', form=form)
+
+
 @app.route('/login', methods=['GET', 'POST'])
-@oid.loginhandler
+
 def login():
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
-    return render_template('login.html',
-                           title='Sign In',
-                           form=form,
-                           providers=app.config['OPENID_PROVIDERS'])
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.verify_password(form.password.data):
+            flash('Invalid username or password', 'warning')
+            return redirect(url_for('login'))
+        login_user(user)
+        flash('{} is now logged in.'.format(user.username))
+        return redirect(url_for('index'))
+    return render_template('login.html', title='Sign In', form=form)
 
 
 @app.route('/logout')
