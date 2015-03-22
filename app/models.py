@@ -43,8 +43,8 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True, index=True)
     password_hash = db.Column(db.String(64))
-    feeds = db.relationship('Feed', backref='user', lazy='dynamic')
-    markers = db.relationship('Marker', backref='user', lazy='dynamic')
+    feeds = db.relationship('Feed', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    markers = db.relationship('Marker', backref='user', lazy='dynamic', cascade='all, delete-orphan')
 
     @property
     def password(self):
@@ -67,7 +67,7 @@ class Feed(db.Model):
     description = db.Column(db.String(40))
     active = db.Column(db.Boolean, unique=False, default=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    markers = db.relationship('Marker', backref='feed', lazy='dynamic')
+    markers = db.relationship('Marker', backref='feed', lazy='dynamic', cascade='all, delete-orphan')
 
     @property
     def newest_marker(self):

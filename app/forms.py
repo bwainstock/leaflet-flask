@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, Length, Optional, EqualTo, Validati
 class KeyForm(Form):
     spot_id = StringField('spot_id', validators=[Length(min=33, max=33)])
     description = StringField('description', validators=[])
+    submit = SubmitField('submit')
 
 
 # class LoginForm(Form):

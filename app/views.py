@@ -88,9 +88,6 @@ def delete(spot_id):
     if feed is None:
         flash('Feed not found.')
         redirect(url_for('index'))
-    markers = feed.markers.all()
-    for marker in markers:
-        db.session.delete(marker)
     db.session.delete(feed)
     db.session.commit()
     flash('You have deleted SPOT ID {}'.format(spot_id), 'info')
@@ -102,8 +99,6 @@ def delete(spot_id):
 def feed(spot_id):
     form = DateForm()
     feed = Feed.query.filter_by(spot_id=spot_id).first()
-    # start = None
-    # end = None
     if feed is None:
         flash('Feed not found.', 'warning')
         return redirect(url_for('index'))
@@ -116,10 +111,7 @@ def feed(spot_id):
             end = feed.newest_marker.datetime
         else:
             end = form.end.data
-        # start = form.start.data
-        # end = form.end.data
         feed.toggle_markers_by_date(start, end)
-        print(start, end)
         db.session.commit()
     markers = feed.markers.order_by(Marker.datetime.desc()).all()
     map_markers = feed.markers.filter(Marker.active == True).order_by(Marker.datetime.asc()).all()
