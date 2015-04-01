@@ -1,10 +1,10 @@
-from flask import render_template, flash, redirect, session, url_for, request, g
+from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from sqlalchemy.exc import IntegrityError
 
 from app import app, db, lm, oid
 from .forms import KeyForm, LoginForm, DateForm, RegistrationForm
-from .models import User, Feed, Marker
+from .models import User, Feed, Marker, bg_router
 
 from datetime import datetime
 
@@ -156,6 +156,39 @@ def deactivate_all(spot_id):
     else:
         flash('Only the feed owner can do that.', 'warning')
     return redirect(url_for('feed', spot_id=feed.spot_id))
+
+
+@app.route('/feed/<spot_id>/route_active', methods=['POST'])
+@login_required
+def route_active(spot_id):
+    feed = Feed.query.filter_by(spot_id=spot_id).first()
+    route = feed.route_active_markers()
+
+    return jsonify({'route id': route.id}), 202, {'Location': url_for('routestatus', route_id=route.id)}
+
+
+@app.route('/feed/route_status/<route_id>')
+def routestatus(route_id):
+    route = bg_router.AsyncResult(route_id)
+
+    if route.state == 'PENDING':
+        response = {
+            'state': route.state,
+            'status': 'Pending...'
+        }
+    elif route.state != 'FAILURE':
+        response = {
+            'state': route.state,
+        }
+        if 'result' in route.info:
+            response['result'] = route.info['result']
+    else:
+        # something went wrong in the background job
+        response = {
+            'state': route.state,
+            'status': str(route.info),  # this is the exception raised
+        }
+    return jsonify(response)
 
 
 @app.route('/marker/<int:id>/toggle')

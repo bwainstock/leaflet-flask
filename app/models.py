@@ -1,6 +1,9 @@
-from app import db
+from app import db, celery
 from flask.ext.login import UserMixin
+import requests
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from time import sleep
 
 # class User(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
@@ -38,6 +41,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 #
 #     def __repr__(self):
 #         return '<User {}>'.format(self.nickname)
+
+
+@celery.task(bind=True)
+def bg_router(self, url, route):
+    segments = []
+    for [(flat, flon), (tlat, tlon)] in route:
+        options = {'format': 'geojson', 'flat': flat, 'flon': flon, 'tlat': tlat, 'tlon': tlon, 'v': 'foot'}
+        response = requests.get(url, params=options, headers={'X-Yours-client': 'tigren@gmail.com'})
+        segments.extend(response.json()['coordinates'])
+        # distance = distance + float(response.json()['properties']['distance'])
+        # print(distance)
+
+    return {'result': [{'latitude': lat, 'longitude': lon} for lon, lat in segments]}
+
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
@@ -78,7 +96,7 @@ class Feed(db.Model):
         return self.markers.order_by(Marker.unixtime.asc()).first()
 
     def toggle_active(self):
-        if self.active == True:
+        if self.active:
             self.active = False
         else:
             self.active = True
@@ -93,6 +111,17 @@ class Feed(db.Model):
         self.markers.filter(Marker.datetime >= start_date, Marker.datetime <= end_date).update({'active': True})
         self.markers.filter((Marker.datetime < start_date) | (Marker.datetime > end_date)).update({'active': False})
         print(start_date, end_date)
+
+    def route_active_markers(self):
+        markers = self.markers.filter(Marker.active == True).order_by(Marker.datetime.asc()).all()
+        url = 'http://www.yournavigation.org/api/1.0/gosmore.php'
+        route, segments = [], []
+
+        for i, point in enumerate(markers[:-1]):
+            pair = [(point.latitude, point.longitude), (markers[i+1].latitude, markers[i+1].longitude)]
+            route.append(pair)
+
+        return bg_router.apply_async((url, route))
 
     def __repr__(self):
         return '<Feed {}>'.format(self.spot_id)
@@ -111,7 +140,7 @@ class Marker(db.Model):
     active = db.Column(db.Boolean, unique=False, default=True)
 
     def toggle_active(self):
-        if self.active == True:
+        if self.active:
             self.active = False
         else:
             self.active = True

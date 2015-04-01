@@ -30,6 +30,7 @@
             <div class="form-group">{{ form.end(class="form-control") }}</div>
             <div class="form-group">{{ form.submit(class="btn btn-default") }}</div>
         </form>
+        <button id="start-route">Show route for active markers</button>
     </div>
     <div class="row">
         <table class="table table-condensed">
@@ -69,4 +70,44 @@
     <!--<script type="text/javascript">-->
         <!--$(".form_datetime").datetimepicker({format: 'YYYY-MM-DD[T]HH:mm:ss'});-->
     <!--</script>-->
+    <script>
+        var routeLine;
+        var status_url;
+        function get_route() {
+            $.ajax({
+                type: 'POST',
+                url: '/feed/{{ feed.spot_id }}/route_active',
+                success: function(data, status, request) {
+                    status_url = request.getResponseHeader('Location');
+                    add_route(status_url);
+                },
+                error: function(){
+                    alert('Unexpected error');
+                }
+            });
+        }
+        function add_route(status_url) {
+            $.getJSON(status_url, function(data) {
+
+                if (data['state'] == 'SUCCESS') {
+                    var messages = data['result'];
+                    routeLine = L.polyline([]);
+                    for (var i = 0, len = messages.length; i < len; i++) {
+                        message = messages[i];
+                        latlng = L.latLng(message.latitude, message.longitude);
+                        routeLine.addLatLng(latlng);
+                    }
+                    map.addLayer(routeLine);
+                }
+                else {
+                    setTimeout(function() {
+                        add_route(status_url);
+                    }, 2000);
+                }
+            });
+        }
+        $(function() {
+            $('#start-route').click(get_route);
+        });
+    </script>
 {% endblock %}
