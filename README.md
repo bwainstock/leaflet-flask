@@ -1,6 +1,11 @@
 # leaflet-flask
 A flask application to create Leaflet maps from SPOT personal locator beacon API data
 
+REQUIREMENTS:
+---
+- Celery Queue
+- Redis
+
 TODO:
 ---
 - Update feed details
