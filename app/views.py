@@ -163,6 +163,9 @@ def deactivate_all(spot_id):
 def route_active(spot_id):
     feed = Feed.query.filter_by(spot_id=spot_id).first()
     route = feed.route_active_markers()
+    if not route:
+        flash('No markers selected to route.')
+        return redirect(url_for('feed', spot_id=spot_id))
 
     return jsonify({'route id': route.id}), 202, {'Location': url_for('routestatus', route_id=route.id)}
 

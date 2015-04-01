@@ -30,7 +30,8 @@
             <div class="form-group">{{ form.end(class="form-control") }}</div>
             <div class="form-group">{{ form.submit(class="btn btn-default") }}</div>
         </form>
-        <button id="start-route">Show route for active markers</button>
+        <button type="button" id="start-route" data-loading-text="Loading..." class="btn btn-primary" autocomplete="off">Route</button>
+        <div id="loader" style="background-image: url('/static/images/loader.gif'); width: 16px; height: 16px; display: none;"></div>
     </div>
     <div class="row">
         <table class="table table-condensed">
@@ -106,8 +107,12 @@
                 }
             });
         }
-        $(function() {
-            $('#start-route').click(get_route);
+
+        $('#start-route').on('click', function() {
+            var $btn = $(this).button('loading');
+            get_route()
+            $btn.button('reset');
+
         });
     </script>
 {% endblock %}

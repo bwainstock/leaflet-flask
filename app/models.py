@@ -117,11 +117,14 @@ class Feed(db.Model):
         url = 'http://www.yournavigation.org/api/1.0/gosmore.php'
         route, segments = [], []
 
-        for i, point in enumerate(markers[:-1]):
-            pair = [(point.latitude, point.longitude), (markers[i+1].latitude, markers[i+1].longitude)]
-            route.append(pair)
+        if markers:
+            for i, point in enumerate(markers[:-1]):
+                pair = [(point.latitude, point.longitude), (markers[i+1].latitude, markers[i+1].longitude)]
+                route.append(pair)
 
-        return bg_router.apply_async((url, route))
+            return bg_router.apply_async((url, route))
+
+        return False
 
     def __repr__(self):
         return '<Feed {}>'.format(self.spot_id)
